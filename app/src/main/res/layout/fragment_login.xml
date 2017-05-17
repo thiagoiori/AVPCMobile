@@ -1,0 +1,143 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.avpc.avpcmobile.login.LoginFragment">
+
+    <TextView
+            android:id="@+id/loginAppTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="37dp"
+            android:text="Asociación de Voluntarios de Protección Civil"
+            />
+
+        <ImageView
+            android:id="@+id/logoProtecioCivil"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@mipmap/civildefense"
+            android:layout_below="@+id/loginAppTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="11dp"
+            android:contentDescription="Asociación de Voluntarios de Protección Civil" />
+
+        <EditText
+            android:id="@+id/txtEmail"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:width="320dp"
+            android:height="30dp"
+            android:inputType="textEmailAddress"
+            android:layout_marginBottom="15dp"
+            android:hint="@string/enter_email"
+            android:paddingBottom="10dp"
+            android:layout_below="@id/logoProtecioCivil"
+            android:layout_centerHorizontal="true" />
+        <EditText
+            android:id="@+id/txtPassword"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:width="320dp"
+            android:height="30dp"
+            android:inputType="textPassword"
+            android:hint="@string/enter_password"
+            android:layout_centerVertical="true"
+            android:layout_alignLeft="@+id/txtEmail"
+            android:layout_alignStart="@+id/txtEmail"
+            android:layout_alignRight="@+id/txtEmail"
+            android:layout_alignEnd="@+id/txtEmail"
+            android:layout_below="@id/txtEmail"/>
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtPassword"
+            android:layout_centerInParent="true"
+            android:width="200dp"
+            android:height="20dp"
+            android:background="@drawable/roundedbutton"
+            android:text="@string/loginButton"
+            android:textAllCaps="false"
+            tools:text="@string/loginButton"
+            android:layout_marginTop="20dp"
+            android:minHeight="30dp"/>
+
+    <Button
+        android:id="@+id/btnForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnLogin"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
+        android:background="@android:color/transparent"
+        android:text="Forgot your password?"
+        android:textAllCaps="false"/>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@id/btnForgotPassword">
+
+            <ImageButton
+                android:id="@+id/btnfacebooklogin"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_gravity="start"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@mipmap/facebook"
+                android:foregroundGravity="left"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="w,1:1"
+                app:layout_constraintRight_toLeftOf="@+id/btngooglepluslogin"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                tools:ignore="RtlHardcoded"
+                android:contentDescription="Login via Facebook" />
+
+            <ImageButton
+                android:id="@+id/btngooglepluslogin"
+                android:layout_width="50dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@mipmap/google_plus"
+                android:foregroundGravity="center"
+                app:layout_constraintDimensionRatio="h,1:1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="Login via Google Plus"/>
+
+            <ImageButton
+                android:id="@+id/btntwitterlogin"
+                android:layout_width="50dp"
+                android:layout_height="0dp"
+                android:layout_gravity="end"
+                android:layout_marginLeft="50dp"
+                android:background="@mipmap/twitter"
+                android:foregroundGravity="right"
+                app:layout_constraintDimensionRatio="h,1:1"
+                app:layout_constraintLeft_toRightOf="@+id/btngooglepluslogin"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="8dp"
+                tools:ignore="RtlHardcoded"
+                android:contentDescription="Login via Twitter"/>
+        </android.support.constraint.ConstraintLayout>
+
+
+
+</RelativeLayout>
