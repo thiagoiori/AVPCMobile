@@ -1,0 +1,87 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.avpc.avpcmobile.fragments.NewIncident">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/new_incident_scrollview"
+            android:fillViewport="true">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/new_incident_user_icon"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"/>
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/new_incident_username"
+                    android:layout_marginLeft="16dp"
+                    android:layout_toRightOf="@id/new_incident_user_icon"
+                    android:layout_alignBottom="@+id/new_incident_user_icon" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/new_incident_title"
+                    android:layout_below="@id/new_incident_username"
+                    android:layout_margin="16dp"
+                    android:hint="Incident Title"/>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:id="@+id/new_incident_image"
+                    android:layout_margin="16dp"
+                    android:layout_below="@id/new_incident_title"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:id="@+id/new_incident_description"
+                    android:scrollbarStyle="insideInset"
+                    android:inputType="textMultiLine"
+                    android:gravity="top|left"
+                    android:layout_margin="16dp"
+                    android:paddingBottom="100dp"
+                    android:layout_marginBottom="100dp"
+                    android:layout_below="@id/new_incident_image"
+                    android:hint="Description"/>
+            </RelativeLayout>
+        </ScrollView>
+        <android.support.v7.widget.ButtonBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:background="#FFFFFF"
+            android:layout_alignParentBottom="true">
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/new_incident_sound"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_menu_camera" />
+            <android.support.v7.widget.AppCompatImageButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_menu_camera"
+                android:id="@+id/new_incident_camera"
+                android:layout_weight="1"
+                android:background="#FFFFFF">
+            </android.support.v7.widget.AppCompatImageButton>
+            <android.support.v7.widget.AppCompatImageButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_menu_camera"
+                android:id="@+id/new_incident_send"
+                android:layout_weight="1"
+                android:background="#FFFFFF"/>
+        </android.support.v7.widget.ButtonBarLayout>
+</RelativeLayout>

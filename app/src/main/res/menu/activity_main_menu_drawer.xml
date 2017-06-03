@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_mapa"
+            android:title="@string/menu_map" />
+        <item
+            android:id="@+id/nav_avisos"
+            android:title="@string/menu_avisos" />
+        <item
+            android:id="@+id/nav_noticias"
+            android:title="@string/menu_noticias" />
+        <item
+        android:id="@+id/nav_voluntarios"
+        android:title="@string/menu_voluntarios" />
+    </group>
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:title="@string/menu_logout" />
+        </menu>
+    </item>
+
+</menu>
