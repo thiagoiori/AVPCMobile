@@ -1,29 +1,33 @@
 <resources>
 
+    <style name="MaterialTheme" parent="ParentMaterialTheme">
+        <item name="android:windowActivityTransitions">true</item>
+    </style>
+
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="ParentMaterialTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorButtonNormal">#2b1f9f</item>
+        <item name="colorControlHighlight">#E8EAF6</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="MaterialTheme.NoActionBar">
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="FacebookLoginButton">
-        <item name="android:textSize">1dp</item>
-        <item name="android:background">@mipmap/facebook</item>
-        <item name="android:layout_marginTop">10dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
-        <item name="android:layout_gravity">center_horizontal</item>
+    <style name="CustomActionBar" parent="ParentMaterialTheme">
+        <item name="android:windowActionBarOverlay">true</item>
+        <!-- Support library compatibility -->
+        <item name="windowActionBarOverlay">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
     </style>
+
 
 </resources>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AVPCMobile</string>
+    <string name="app_name">AVPC Mobile</string>
     <string name="facebook_application_id" translatable="false">737607879753441</string>
     <string name="app_id" translatable="false">737607879753441</string>
     <string name="enter_email">Email</string>
@@ -22,6 +22,7 @@
     <string name="menu_avisos">Incidents</string>
     <string name="menu_noticias">News</string>
     <string name="menu_logout">Logout</string>
+    <string name="menu_vehicles">Vehicles</string>
 
     <string name="facebook_app_id">148851038810437</string>
     <string name="facebook_app_name">HelloFBSample</string>
@@ -39,4 +40,16 @@
     <string name="exception">Exception: %1$s</string>
     <string name="title_activity_member_detail">MemberDetailActivity</string>
     <string name="btn_add_incident">Add Incident</string>
+    <string name="rest_server" formatted="false" translatable="false">http://192.168.1.105:8080/avpc-1.0-SNAPSHOT</string>
+    <!--<string name="rest_server" formatted="false" translatable="false">http://192.168.1.109:8080</string>-->
+    <string name="incident_title">Incident Title</string>
+    <string name="user_token">userToken</string>
+    <string name="incident_description">Incident Description</string>
+    <string name="title_activity_new_service">New Service</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="new_service_members">Members</string>
+    <string name="new_service_map">Map</string>
+    <string name="new_service_details">Details</string>
+    <string name="user_picture_profile">User picture profile</string>
+    <string name="track_your_position">Track your position    </string>
 </resources>

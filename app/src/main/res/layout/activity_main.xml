@@ -8,10 +8,10 @@
     android:id="@+id/loginContainer">
 
     <!--<fragment-->
-        <!--android:name="com.avpc.avpcmobile.login.LoginFragment"-->
+        <!--android:name="com.avpc.avpcmobile.fragments.LoginFragment"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent"-->
         <!--android:id="@+id/loginFragment"-->
-        <!--class="com.avpc.avpcmobile.login.LoginFragment"/>-->
+        <!--class="com.avpc.avpcmobile.fragments.LoginFragment"/>-->
 
 </RelativeLayout>

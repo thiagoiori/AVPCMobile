@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.avpc.avpcmobile.R;
 
@@ -46,16 +47,16 @@ public class MemberDetail extends Fragment {
         if (savedInstanceState != null) {
             mMemberId = savedInstanceState.getLong(PARAM_MEMBER_ID);
         }
+        //Toast.makeText(getContext(), mMemberId.toString(), Toast.LENGTH_SHORT).show();
         return inflater.inflate(R.layout.fragment_member_detail, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        //Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
-        appCompatActivity.setSupportActionBar(toolbar);
-        appCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //appCompatActivity.getSupportActionBar().hide();
+//        appCompatActivity.setSupportActionBar(toolbar);
+//        appCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         super.onViewCreated(view, savedInstanceState);
     }

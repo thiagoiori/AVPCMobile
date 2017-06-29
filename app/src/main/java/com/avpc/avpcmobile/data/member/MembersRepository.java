@@ -1,0 +1,184 @@
+package com.avpc.avpcmobile.data.member;
+
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import android.support.annotation.NonNull;
+
+import com.avpc.model.Member;
+
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+
+public class MembersRepository implements MembersDataSource {
+
+    private static MembersRepository INSTANCE = null;
+    private final MembersDataSource mMembersRemoteDataSource;
+    private final MembersDataSource mMembersLocalDataSource;
+    private List<MembersRepositoryObserver> mObservers = new ArrayList<>();
+
+    Map<Long, Member> mCachedMembers;
+    boolean mCacheIsDirty = false;
+
+    private MembersRepository(@NonNull MembersDataSource membersRemoteDataSource,
+                            @NonNull MembersDataSource membersLocalDataSource) {
+        mMembersRemoteDataSource = checkNotNull(membersRemoteDataSource);
+        mMembersLocalDataSource = checkNotNull(membersLocalDataSource);
+    }
+
+    public static MembersRepository getInstance(MembersDataSource membersRemoteDataSource,
+                                                MembersDataSource membersLocalDataSource) {
+        if (INSTANCE == null) {
+            INSTANCE = new MembersRepository(membersRemoteDataSource, membersLocalDataSource);
+        }
+        return INSTANCE;
+    }
+
+    public void addContentObserver(MembersRepositoryObserver observer) {
+        if (!mObservers.contains(observer)) {
+            mObservers.add(observer);
+        }
+    }
+
+    public void removeContentObserver(MembersRepositoryObserver observer) {
+        if (mObservers.contains(observer)) {
+            mObservers.remove(observer);
+        }
+    }
+
+    private void notifyContentObserver() {
+        for (MembersRepositoryObserver observer : mObservers) {
+            observer.onMembersChanged();
+        }
+    }
+
+    public static void destroyInstance() {
+        INSTANCE = null;
+    }
+
+    @Override
+    public List<Member> getMembers() {
+
+        List<Member> members = null;
+
+        if (!mCacheIsDirty) {
+            members = getCachedMembers();
+        } else {
+            members = mMembersLocalDataSource.getMembers();
+        }
+
+        if (members == null || members.isEmpty()) {
+            members = mMembersRemoteDataSource.getMembers();
+            saveMembersInLocalDataSource(members);
+        }
+
+        processLoadedMembers(members);
+        members = getCachedMembers();
+
+        return members;
+    }
+
+    private void processLoadedMembers(List<Member> members) {
+        if (members == null) {
+            mCachedMembers = null;
+            mCacheIsDirty = false;
+            return;
+        }
+        if (mCachedMembers == null) {
+            mCachedMembers = new LinkedHashMap<>();
+        }
+        mCachedMembers.clear();
+        for (Member member : members) {
+            mCachedMembers.put(member.getId(), member);
+        }
+        mCacheIsDirty = false;
+    }
+
+    private void saveMembersInLocalDataSource(List<Member> members) {
+        if (members != null){
+            for (Member member : members) {
+                mMembersLocalDataSource.saveMember(member);
+            }
+        }
+    }
+
+    private List<Member> getCachedMembers() {
+        return mCachedMembers == null ? null : new ArrayList<>(mCachedMembers.values());
+    }
+
+    @Override
+    public void getMember(@NonNull String memberId, @NonNull GetMemberCallback callback) {
+
+    }
+
+    @Override
+    public void saveMember(@NonNull Member member) {
+
+    }
+
+    @Override
+    public void completeMember(@NonNull Member member) {
+
+    }
+
+    @Override
+    public void completeMember(@NonNull String memberId) {
+
+    }
+
+    @Override
+    public void refreshMembers() {
+
+    }
+
+    @Override
+    public void deleteAllMembers() {
+
+    }
+
+    @Override
+    public void deleteMember(@NonNull String memberId) {
+
+    }
+
+//    private void getMembersFromRemoteDataSource(@NonNull final LoadMembersCallback callback) {
+//        mMembersLocalDataSource.getMembers(new LoadMembersCallback() {
+//            @Override
+//            public void onMembersLoaded(List<Member> members) {
+//                refreshCache(members);
+//                refreshLocalDataSource(members);
+//                callback.onMembersLoaded(new ArrayList<>(mCachedMembers.values()));
+//            }
+//
+//            @Override
+//            public void onDataNotAvailable() {
+//                callback.onDataNotAvailable();
+//            }
+//        });
+//    }
+
+    private void refreshCache(List<Member> members) {
+        if (mCachedMembers == null) {
+            mCachedMembers = new LinkedHashMap<>();
+        }
+        mCachedMembers.clear();
+        for (Member member : members) {
+            mCachedMembers.put(member.getId(), member);
+        }
+        mCacheIsDirty = false;
+    }
+
+    private void refreshLocalDataSource(List<Member> members) {
+        for (Member member : members) {
+            mMembersLocalDataSource.saveMember(member);
+        }
+    }
+
+    public interface MembersRepositoryObserver {
+        void onMembersChanged();
+    }
+}

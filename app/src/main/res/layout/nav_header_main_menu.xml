@@ -17,19 +17,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@android:drawable/sym_def_app_icon" />
+        app:srcCompat="@android:drawable/sym_def_app_icon"
+        android:contentDescription="@string/user_picture_profile"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/menu_profile_username"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Android Studio"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+
+    <android.support.v7.widget.SwitchCompat
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="android.studio@android.com" />
+        android:id="@+id/menu_track_position_switch"
+        android:text="@string/track_your_position"
+        android:layout_gravity="start"/>
 
 </LinearLayout>

@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.avpc.avpcmobile.R;
-import com.avpc.avpcmobile.utils.DistanceCalculator;
-import com.avpc.model.MemberDatabaseContract;
+import com.avpc.avpcmobile.util.DistanceCalculator;
+import com.avpc.model.db.MemberDatabaseContract;
 import com.squareup.picasso.Picasso;
 
 public class UIMembersCursorAdapter extends CursorAdapter {
@@ -32,7 +32,7 @@ public class UIMembersCursorAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.memberlistitem, parent, false);
+        return LayoutInflater.from(context).inflate(R.layout.member_list_item, parent, false);
     }
 
     @Override

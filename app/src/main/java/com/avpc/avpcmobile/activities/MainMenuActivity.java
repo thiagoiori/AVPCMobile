@@ -1,5 +1,6 @@
 package com.avpc.avpcmobile.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -13,12 +14,14 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -31,76 +34,97 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.avpc.avpcmobile.MainActivity;
-import com.avpc.avpcmobile.MemberFragment;
 import com.avpc.avpcmobile.R;
+import com.avpc.avpcmobile.activities.base.BaseActivity;
 import com.avpc.avpcmobile.fragments.MemberDetail;
-import com.avpc.avpcmobile.fragments.NewIncident;
-import com.avpc.avpcmobile.map.MapVoluntarios;
+import com.avpc.avpcmobile.fragments.MembersRecyclerViewFragment;
+import com.avpc.avpcmobile.fragments.NewIncidentFragment;
+import com.avpc.avpcmobile.fragments.MapVoluntarios;
+import com.avpc.avpcmobile.fragments.NewsListFragment;
+import com.avpc.avpcmobile.fragments.ServicesListFragment;
+import com.avpc.avpcmobile.fragments.VehiclesListFragment;
+
+import com.avpc.service.UpdateMemberLocationService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MainMenuActivity extends AppCompatActivity
+
+public class MainMenuActivity extends BaseActivity
         implements
         NavigationView.OnNavigationItemSelectedListener,
-        MemberFragment.OnMemberListListener,
+        MembersRecyclerViewFragment.OnMemberListListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        NewIncident.OnNewIncidentListener{
+        NewIncidentFragment.OnNewIncidentListener{
 
     private static final String MAIN_ACTIVITY_PICTURE = "MsgLogErrorPicture";
-    private FirebaseUser user;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseAuth.IdTokenListener mTokenListener;
+    private FirebaseUser mUser;
     private Fragment mMapVoluntarios;
     private ActionBarDrawerToggle mToggle;
-//    private static final String NAVIGATION_POSITION_PARAM = "navigationPosition";
-//    private int mNavigationPosition = 0;
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
     private final int REQUEST_LOCATION = 10;
     static final int REQUEST_IMAGE_CAPTURE = 20;
-    private NewIncident mNewIncident;
+    private NewIncidentFragment mNewIncidentFragment;
     private Uri mUriNewIncidentPhoto;
     private static final String SAVE_INSTANCE_PHOTO = "saveInstancePhoto";
     private String mCurrentPhotoPath;
 
+    private FloatingActionButton fab;
+    private SwitchCompat switchTrackPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user == null) {
-                    redirectToLogin();
-                }
-            }
-        };
+//        this.mAuth = FirebaseAuth.getInstance();
+//
+//        mAuthListener = new FirebaseAuth.AuthStateListener() {
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                mUser = firebaseAuth.getCurrentUser();
+//                if (mUser == null) {
+//                    redirectToLogin();
+//                }
+//            }
+//        };
+//
+//        mTokenListener = new FirebaseAuth.IdTokenListener() {
+//            @Override
+//            public void onIdTokenChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+//                if (firebaseUser != null) {
+//                    firebaseUser.getIdToken(true)
+//                            .addOnCompleteListener(
+//                                    new OnCompleteListener<GetTokenResult>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<GetTokenResult> task) {
+//
+//                                        }
+//                                    });
+//                }
+//            }
+//        };
 
-        setContentView(R.layout.activity_main_menu);
+
+        setContentView(R.layout.app_bar_main_menu);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mToggle = new ActionBarDrawerToggle(
@@ -123,12 +147,82 @@ public class MainMenuActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-//        if (savedInstanceState != null) {
-//            mNavigationPosition = savedInstanceState.getInt(NAVIGATION_POSITION_PARAM);
-//            selectItemMenu(mNavigationPosition);
-//        }
+        initComponents();
+        initNavigationViewComponents(navigationView);
+        setComponentListeners();
 
         buildGoogleApiClient();
+    }
+
+    private void initNavigationViewComponents(NavigationView navigationView) {
+        switchTrackPosition = (SwitchCompat) navigationView.getHeaderView(0).findViewById(R.id.menu_track_position_switch);
+    }
+
+    private void initComponents() {
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+    }
+
+    private void setComponentListeners() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openNewServiceActivity();
+            }
+        });
+
+        switchTrackPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SwitchCompat switchCompat = (SwitchCompat) v;
+                if (switchCompat.isChecked()) {
+                    startUpdatingMemberLocation();
+                } else {
+                    stopUpdatingMemberLocation();
+                }
+            }
+        });
+
+    }
+
+    private void startUpdatingMemberLocation() {
+        Intent intent = new Intent(MainMenuActivity.this, UpdateMemberLocationService.class);
+        startService(intent);
+    }
+
+    private void  stopUpdatingMemberLocation() {
+        Intent intent = new Intent(MainMenuActivity.this, UpdateMemberLocationService.class);
+        stopService(intent);
+    }
+
+    private void openNewServiceActivity() {
+        Intent newServiceIntent = new Intent(MainMenuActivity.this, NewServiceActivity.class);
+        startActivity(newServiceIntent);
+        overridePendingTransition(R.anim.activity_open_translate, R.anim.activity_close_scale);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+//        mAuth.addAuthStateListener(mAuthListener);
+//        mAuth.addIdTokenListener(mTokenListener);
+    }
+
+    @Override
+    public void onStop() {
+//        if(mAuth != null) {
+//            mAuth.removeAuthStateListener(mAuthListener);
+//            mAuth.removeIdTokenListener(mTokenListener);
+//        }
+        super.onStop();
+    }
+
+    public void signOut() {
+        try {
+            mAuth.signOut();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -140,16 +234,11 @@ public class MainMenuActivity extends AppCompatActivity
                     .build();
     }
 
-    private void redirectToLogin() {
-        Intent loginIntent = new Intent(this, MainActivity.class);
+    public void redirectToLogin() {
+        Intent loginIntent = new Intent(MainMenuActivity.this, MainActivity.class);
         startActivity(loginIntent);
         finish();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        overridePendingTransition(R.anim.activity_open_scale, R.anim.activity_close_translate);
     }
 
     @Override
@@ -170,7 +259,7 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState.containsKey(SAVE_INSTANCE_PHOTO)){
             mUriNewIncidentPhoto = Uri.parse(savedInstanceState.getString(SAVE_INSTANCE_PHOTO));
-            mNewIncident.receivePhotoUri(mUriNewIncidentPhoto);
+            mNewIncidentFragment.receivePhotoUri(mUriNewIncidentPhoto);
         }
         super.onRestoreInstanceState(savedInstanceState);
     }
@@ -180,27 +269,6 @@ public class MainMenuActivity extends AppCompatActivity
         super.onRestoreInstanceState(savedInstanceState, persistentState);
     }
 
-    @Override
-    protected void onRestart() {
-        if (mNewIncident != null)
-            mNewIncident.receivePhotoUri(mUriNewIncidentPhoto);
-        super.onRestart();
-    }
-
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-        super.onStop();
-    }
 
     @Override
     public void onBackPressed() {
@@ -236,11 +304,6 @@ public class MainMenuActivity extends AppCompatActivity
             return true;
         }
 
-        if (id == R.id.action_add_incident) {
-            showNewIncidentFragment();
-            return true;
-        }
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -260,21 +323,39 @@ public class MainMenuActivity extends AppCompatActivity
         //mNavigationPosition = id;
         Fragment fragment = null;
         if (id == R.id.nav_voluntarios) {
-            fragment = createFragment(MemberFragment.class, fragment);
+            fragment = createFragment(MembersRecyclerViewFragment.class, fragment);
         } else if (id == R.id.nav_mapa) {
             mMapVoluntarios = createFragment(MapVoluntarios.class, mMapVoluntarios);
             fragment = mMapVoluntarios;
         } else if (id == R.id.nav_avisos) {
-
+            fragment = createFragment(ServicesListFragment.class, fragment);
         } else if (id == R.id.nav_noticias) {
-
+            fragment = createFragment(NewsListFragment.class, fragment);
+        } else if (id == R.id.nav_vehicles) {
+            fragment = createFragment(VehiclesListFragment.class, fragment);
         } else if (id == R.id.nav_logout) {
-
+            logout();
+            return true;
         }
+
         switchFragments(fragment);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void logout() {
+        new AlertDialog.Builder(MainMenuActivity.this)
+                .setTitle(R.string.app_name)
+                .setMessage("Do you really want to logout from the application?")
+                .setNegativeButton(android.R.string.cancel, null) // dismisses by default
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface dialog, int which) {
+                        signOut();
+                    }
+                })
+                .create()
+                .show();
     }
 
     private Fragment createFragment(Class fragmentClass, Fragment fragment) {
@@ -303,14 +384,19 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void showNewIncidentFragment() {
-        NewIncident newIncident = new NewIncident();
+        NewIncidentFragment newIncidentFragment = new NewIncidentFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        mNewIncident = newIncident;
-        transaction.replace(R.id.menuContent, newIncident);
+        mNewIncidentFragment = newIncidentFragment;
+        transaction.replace(R.id.menuContent, newIncidentFragment);
         transaction.addToBackStack(null);
         transaction.setTransition(FragmentTransaction.TRANSIT_ENTER_MASK);
         transaction.commit();
+
+        ViewCompat.animate(fab)
+                .translationY(-100)
+                .setDuration(300)
+                .start();
     }
 
     private void switchFragments(Fragment fragment) {
@@ -369,13 +455,16 @@ public class MainMenuActivity extends AppCompatActivity
             dispatchTakePictureIntent();
         }
 
+        //CameraManager cm =
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mNewIncidentFragment.receivePhotoBitmap(imageBitmap);
         }
     }
 
@@ -383,7 +472,6 @@ public class MainMenuActivity extends AppCompatActivity
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
@@ -395,18 +483,18 @@ public class MainMenuActivity extends AppCompatActivity
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
+                Uri photoURI = FileProvider.getUriForFile(
+                        this,
                         "com.avpc.avpcmobile.fileprovider",
                         photoFile);
                 mUriNewIncidentPhoto = photoURI;
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
     }
 
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
