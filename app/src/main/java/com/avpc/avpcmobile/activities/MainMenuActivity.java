@@ -92,35 +92,6 @@ public class MainMenuActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        this.mAuth = FirebaseAuth.getInstance();
-//
-//        mAuthListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                mUser = firebaseAuth.getCurrentUser();
-//                if (mUser == null) {
-//                    redirectToLogin();
-//                }
-//            }
-//        };
-//
-//        mTokenListener = new FirebaseAuth.IdTokenListener() {
-//            @Override
-//            public void onIdTokenChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-//                if (firebaseUser != null) {
-//                    firebaseUser.getIdToken(true)
-//                            .addOnCompleteListener(
-//                                    new OnCompleteListener<GetTokenResult>() {
-//                                        @Override
-//                                        public void onComplete(@NonNull Task<GetTokenResult> task) {
-//
-//                                        }
-//                                    });
-//                }
-//            }
-//        };
-
 
         setContentView(R.layout.app_bar_main_menu);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -200,29 +171,12 @@ public class MainMenuActivity extends BaseActivity
         overridePendingTransition(R.anim.activity_open_translate, R.anim.activity_close_scale);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-//        mAuth.addAuthStateListener(mAuthListener);
-//        mAuth.addIdTokenListener(mTokenListener);
-    }
-
-    @Override
-    public void onStop() {
-//        if(mAuth != null) {
-//            mAuth.removeAuthStateListener(mAuthListener);
-//            mAuth.removeIdTokenListener(mTokenListener);
-//        }
-        super.onStop();
-    }
-
     public void signOut() {
         try {
             mAuth.signOut();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     protected synchronized void buildGoogleApiClient() {
