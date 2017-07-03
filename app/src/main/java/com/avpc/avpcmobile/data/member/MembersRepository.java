@@ -21,8 +21,8 @@ public class MembersRepository implements MembersDataSource {
     private final MembersDataSource mMembersLocalDataSource;
     private List<MembersRepositoryObserver> mObservers = new ArrayList<>();
 
-    Map<Long, Member> mCachedMembers;
-    boolean mCacheIsDirty = false;
+    private Map<Long, Member> mCachedMembers;
+    private boolean mCacheIsDirty = false;
 
     private MembersRepository(@NonNull MembersDataSource membersRemoteDataSource,
                             @NonNull MembersDataSource membersLocalDataSource) {
@@ -56,6 +56,10 @@ public class MembersRepository implements MembersDataSource {
         }
     }
 
+    public boolean cachedMembersAvailable() {
+        return mCachedMembers != null && !mCacheIsDirty;
+    }
+
     public static void destroyInstance() {
         INSTANCE = null;
     }
@@ -78,11 +82,11 @@ public class MembersRepository implements MembersDataSource {
 
         processLoadedMembers(members);
         members = getCachedMembers();
-
         return members;
     }
 
     private void processLoadedMembers(List<Member> members) {
+
         if (members == null) {
             mCachedMembers = null;
             mCacheIsDirty = false;
@@ -106,12 +110,17 @@ public class MembersRepository implements MembersDataSource {
         }
     }
 
-    private List<Member> getCachedMembers() {
+    public List<Member> getCachedMembers() {
         return mCachedMembers == null ? null : new ArrayList<>(mCachedMembers.values());
     }
 
     @Override
     public void getMember(@NonNull String memberId, @NonNull GetMemberCallback callback) {
+
+    }
+
+    @Override
+    public void saveMembers(@NonNull List<Member> members) {
 
     }
 
@@ -132,7 +141,8 @@ public class MembersRepository implements MembersDataSource {
 
     @Override
     public void refreshMembers() {
-
+        mCacheIsDirty = true;
+        notifyContentObserver();
     }
 
     @Override

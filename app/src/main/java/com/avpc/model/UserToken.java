@@ -19,27 +19,11 @@ public class UserToken {
         internalUserToken = new UserToken();
     }
 
-    private String mToken;
+    private static String mToken = "";
+    private static String mSession = "";
 
-    public String getToken() {
-        return mToken;
-    }
-
-    public void setToken(String mToken) {
-        propertyChangeSupport.firePropertyChange(
-                "mToken"
-                , this.mToken
-                , mToken);
-        this.mToken = mToken;
-    }
-
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangedListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
+    public static void setToken(String token) { mToken = token; }
+    public static void setSession(String session) { mSession = session; }
+    public static String getToken() { return mToken; }
+    public static String getSession() { return mSession; }
 }

@@ -28,7 +28,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,11 +48,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GetTokenResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,9 +65,6 @@ public class MainMenuActivity extends BaseActivity
         NewIncidentFragment.OnNewIncidentListener{
 
     private static final String MAIN_ACTIVITY_PICTURE = "MsgLogErrorPicture";
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseAuth.IdTokenListener mTokenListener;
     private FirebaseUser mUser;
     private Fragment mMapVoluntarios;
     private ActionBarDrawerToggle mToggle;
@@ -93,7 +85,7 @@ public class MainMenuActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.app_bar_main_menu);
+        setContentView(R.layout.activity_main_menu);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -169,14 +161,6 @@ public class MainMenuActivity extends BaseActivity
         Intent newServiceIntent = new Intent(MainMenuActivity.this, NewServiceActivity.class);
         startActivity(newServiceIntent);
         overridePendingTransition(R.anim.activity_open_translate, R.anim.activity_close_scale);
-    }
-
-    public void signOut() {
-        try {
-            mAuth.signOut();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -330,7 +314,7 @@ public class MainMenuActivity extends BaseActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        transaction.replace(R.id.menuContent, memberDetail);
+        transaction.replace(R.id.fragment_content, memberDetail);
         transaction.addToBackStack(null);
         transaction.setTransition(FragmentTransaction.TRANSIT_ENTER_MASK);
         transaction.commit();
@@ -342,7 +326,7 @@ public class MainMenuActivity extends BaseActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         mNewIncidentFragment = newIncidentFragment;
-        transaction.replace(R.id.menuContent, newIncidentFragment);
+        transaction.replace(R.id.fragment_content, newIncidentFragment);
         transaction.addToBackStack(null);
         transaction.setTransition(FragmentTransaction.TRANSIT_ENTER_MASK);
         transaction.commit();
@@ -357,7 +341,7 @@ public class MainMenuActivity extends BaseActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        transaction.replace(R.id.menuContent, fragment);
+        transaction.replace(R.id.fragment_content, fragment);
         //transaction.addToBackStack(null);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();

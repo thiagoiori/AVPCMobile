@@ -3,8 +3,10 @@ package com.avpc.avpcmobile.data.member.local;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 
 import com.avpc.avpcmobile.data.member.MembersDataSource;
@@ -81,7 +83,26 @@ public class MembersLocalDataSource implements MembersDataSource {
     }
 
     @Override
+    public void saveMembers(@NonNull List<Member> members) {
+
+    }
+
+    @Override
     public void saveMember(@NonNull Member member) {
+        ContentValues membersContent = loadMemberFields(member);
+        mDb.beginTransaction();
+
+        try {
+            mDb.insert(MemberDatabaseContract.TABLE_NAME,
+                    null,
+                    membersContent);
+            mDb.setTransactionSuccessful();
+        } catch (SQLException ex) {
+            Log.e("InsertMember", ex.getMessage());
+        }
+        finally {
+            mDb.endTransaction();
+        }
 
     }
 

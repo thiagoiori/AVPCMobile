@@ -28,7 +28,6 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/MaterialTheme">
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.avpc.avpcmobile.fileprovider"
@@ -82,7 +81,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".member.MemberActivity"></activity>
+        <activity android:name=".member.MembersActivity" />
+        <activity android:name=".memberdetails.MemberDetailsActivity"></activity>
     </application>
 
 </manifest>

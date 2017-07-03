@@ -8,6 +8,7 @@ import java.util.List;
 
 
 public interface MembersDataSource {
+
     interface LoadMembersCallback {
         void onMembersLoaded(List<Member> members);
         void onDataNotAvailable();
@@ -24,7 +25,7 @@ public interface MembersDataSource {
 
     void getMember(@NonNull String memberId, @NonNull GetMemberCallback callback);
 
-
+    void saveMembers(@NonNull List<Member> members);
 
     void saveMember(@NonNull Member member);
 

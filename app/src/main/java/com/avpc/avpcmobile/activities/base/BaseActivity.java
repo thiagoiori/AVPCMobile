@@ -1,139 +1,151 @@
 package com.avpc.avpcmobile.activities.base;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 
-import com.avpc.model.UserToken;
+import com.avpc.avpcmobile.R;
+import com.avpc.avpcmobile.member.MembersActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GetTokenResult;
+public class BaseActivity extends FirebaseLoginActivity {
 
-public abstract class BaseActivity extends AppCompatActivity {
-
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseAuth.IdTokenListener mTokenListener;
-    private FirebaseUser mUser;
-    private UserToken userToken;
-    private String mToken;
-    //protected ILogin mLogin;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+    private SwitchCompat mSwitchTrackPosition;
+    private static final String MENU_ITEM = "menu_item";
+    private int mMenuItemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.mAuth = FirebaseAuth.getInstance();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                mUser = firebaseAuth.getCurrentUser();
-                if (mUser != null) {
-                    callMainMenu();
-                } else {
-                    redirectToLogin();
-                }
+        setContentView(R.layout.activity_main_menu);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        mToggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
             }
         };
+        mToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.addDrawerListener(mToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-        mTokenListener = new FirebaseAuth.IdTokenListener() {
-            @Override
-            public void onIdTokenChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                if (firebaseUser != null) {
-                    firebaseUser.getIdToken(true)
-                            .addOnCompleteListener(
-                                    new OnCompleteListener<GetTokenResult>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<GetTokenResult> task) {
-
-                                        }
-                                    });
-                }
-            }
-        };
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-        mAuth.addIdTokenListener(mTokenListener);
-    }
-
-    @Override
-    public void onStop() {
-        if(mAuth != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-            mAuth.removeIdTokenListener(mTokenListener);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
         }
-        super.onStop();
+
+        initNavigationViewComponents(navigationView);
+
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(MENU_ITEM)) {
+            mMenuItemId = getIntent().getExtras().getInt(MENU_ITEM);
+            navigationView.setCheckedItem(mMenuItemId);
+        }
     }
 
-    public void createAuthStateListener() {
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                mUser = firebaseAuth.getCurrentUser();
-                if (mUser != null) {
-                    callMainMenu();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
-                } else {
-                    redirectToLogin();
-                }
-            }
-        };
+        if (mToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
-    public void createITokenStateListener() {
-        mTokenListener = new FirebaseAuth.IdTokenListener() {
-            @Override
-            public void onIdTokenChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                if (firebaseUser != null) {
-                    firebaseUser.getIdToken(true)
-                            .addOnCompleteListener(
-                                    new OnCompleteListener<GetTokenResult>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<GetTokenResult> task) {
-                                            //                        mToken = task.getResult().getToken();
-                                            //                        userToken.setToken(mToken);
-                                        }
-                                    });
-                }
-            }
-        };
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mToggle.syncState();
     }
 
-    public void callMainMenu() {
-
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mToggle.onConfigurationChanged(newConfig);
     }
 
-    public void redirectToLogin() {
-
+    private void initNavigationViewComponents(NavigationView navigationView) {
+        mSwitchTrackPosition = (SwitchCompat) navigationView.getHeaderView(0).findViewById(R.id.menu_track_position_switch);
     }
 
-    public void signOut() {
-        mAuth.signOut();
-    }
-
-    public void signIn(String username, String password) {
-        mAuth.signInWithEmailAndPassword(username, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            mUser = mAuth.getCurrentUser();
-                            callMainMenu();
-                        } else {
-                            redirectToLogin();
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        if (mMenuItemId == menuItem.getItemId()) {
+                            mDrawerLayout.closeDrawers();
+                            return true;
                         }
+
+                        mMenuItemId = menuItem.getItemId();
+
+                        Bundle mBundle = new Bundle();
+                        mBundle.putInt(MENU_ITEM, menuItem.getItemId());
+                        switch (menuItem.getItemId()) {
+                            case R.id.nav_mapa:
+
+                                break;
+                            case R.id.nav_voluntarios:
+                                Intent intent =
+                                        new Intent(BaseActivity.this, MembersActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.putExtra(MENU_ITEM, R.id.nav_voluntarios);
+                                intent.putExtras(mBundle);
+                                startActivity(intent);
+                                break;
+                            default:
+                                break;
+                        }
+                        // Close the navigation drawer when an item is selected.
+                        menuItem.setChecked(true);
+                        mDrawerLayout.closeDrawers();
+                        return true;
                     }
                 });
+    }
+
+    private void logout() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.app_name)
+                .setMessage("Do you really want to logout from the application?")
+                .setNegativeButton(android.R.string.cancel, null) // dismisses by default
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface dialog, int which) {
+                        signOut();
+                    }
+                })
+                .create()
+                .show();
     }
 }
 

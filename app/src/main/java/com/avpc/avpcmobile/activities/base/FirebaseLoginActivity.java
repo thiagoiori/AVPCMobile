@@ -1,38 +1,34 @@
-package com.avpc.avpcmobile.activities;
+package com.avpc.avpcmobile.activities.base;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.WindowManager;
+import android.util.Log;
+import android.widget.Toast;
 
-import com.avpc.avpcmobile.R;
-import com.avpc.avpcmobile.activities.base.BaseActivity;
-import com.avpc.avpcmobile.fragments.ForgotPasswordFragment;
-import com.avpc.avpcmobile.fragments.LoginFragment;
-import com.avpc.avpcmobile.member.MembersActivity;
+import com.avpc.avpcmobile.data.user.remote.LoginTokenValidator;
 import com.avpc.model.UserToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 
-public class MainActivity extends AppCompatActivity implements
-        LoginFragment.LoginListener {
-
+public class FirebaseLoginActivity extends AppCompatActivity
+implements LoginTokenValidator.UserTokenValidatorListener{
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth.IdTokenListener mTokenListener;
     private FirebaseUser mUser;
+    private static final String USER_TOKEN = "user_token";
+    private static final String TAG = FirebaseLoginActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
         this.mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -40,8 +36,11 @@ public class MainActivity extends AppCompatActivity implements
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 mUser = firebaseAuth.getCurrentUser();
                 if (mUser != null) {
-                    UserToken.setToken(mUser.getIdToken(false).getResult().getToken());
+                    if (UserToken.getToken().isEmpty())
+                        UserToken.setToken(mUser.getIdToken(false).getResult().getToken());
                     callMainMenu();
+                } else {
+                    redirectToLogin();
                 }
             }
         };
@@ -51,21 +50,32 @@ public class MainActivity extends AppCompatActivity implements
             public void onIdTokenChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                 if (firebaseUser != null) {
-                    firebaseUser.getIdToken(true)
+                    firebaseUser.getIdToken(false)
                             .addOnCompleteListener(
                                     new OnCompleteListener<GetTokenResult>() {
                                         @Override
                                         public void onComplete(@NonNull Task<GetTokenResult> task) {
-
+                                            String token = null;
+                                            try {
+                                                token = task.getResult().getToken();
+                                                beginUserSession(token);
+                                            } catch (Exception e) {
+                                                Log.e(TAG, e.getMessage());
+                                            }
                                         }
                                     });
                 }
             }
         };
+    }
 
-        LoginFragment loginFragment = new LoginFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.loginContainer, loginFragment).commit();
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    private void beginUserSession(String token) {
+//        if (UserToken.getToken() == null || !UserToken.getToken().equals(token)) {
+//            UserToken.setToken(token);
+//            LoginTokenValidator loginTokenValidator = new LoginTokenValidator(getApplicationContext(),
+//                    FirebaseLoginActivity.this);
+//            loginTokenValidator.getTokenSession(token);
+//        }
     }
 
     @Override
@@ -77,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onStop() {
-        if(mAuth != null) {
+        if (mAuth != null) {
             mAuth.removeAuthStateListener(mAuthListener);
             mAuth.removeIdTokenListener(mTokenListener);
         }
@@ -85,37 +95,30 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.forgotpasswordmenu, menu);
-        return true;
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(USER_TOKEN, UserToken.getToken());
     }
 
     @Override
-    public void onForgotPasswordClicked(String email) {
-        ForgotPasswordFragment forgotPasswordFragment = new ForgotPasswordFragment();
-        Bundle args = new Bundle();
-        args.putString("EMAIL", email);
-        forgotPasswordFragment.setArguments(args);
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right)
-                .replace(R.id.loginContainer, forgotPasswordFragment)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    @Override
-    public void sendUsernamePassword(String username, String password) {
-        signIn(username, password);
+        if (savedInstanceState != null && savedInstanceState.containsKey(USER_TOKEN)) {
+            UserToken.setToken(savedInstanceState.getString(USER_TOKEN));
+        }
     }
 
     public void callMainMenu() {
-        Intent mainMenuIntent = new Intent(MainActivity.this, MembersActivity.class);
-        startActivity(mainMenuIntent);
-        finish();
-        overridePendingTransition(R.anim.activity_open_translate, R.anim.activity_close_scale);
+
+    }
+
+    public void redirectToLogin() {
+
+    }
+
+    public void signOut() {
+        mAuth.signOut();
     }
 
     public void signIn(String username, String password) {
@@ -126,8 +129,20 @@ public class MainActivity extends AppCompatActivity implements
                         if (task.isSuccessful()) {
                             mUser = mAuth.getCurrentUser();
                             callMainMenu();
+                        } else {
+                            redirectToLogin();
+                        }
                     }
-                }});
+                });
+    }
 
+    @Override
+    public void receiveValidatedToken(String tokenSession) {
+        UserToken.setSession(tokenSession);
+    }
+
+    @Override
+    public void showErrorMessage(String messageError) {
+        Toast.makeText(FirebaseLoginActivity.this, messageError, Toast.LENGTH_LONG).show();
     }
 }
