@@ -3,6 +3,9 @@
     <style name="MaterialTheme" parent="ParentMaterialTheme">
 
     </style>
+    <style name="SplashTheme" parent="MaterialTheme">
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
 
     <!-- Base application theme. -->
     <style name="ParentMaterialTheme" parent="Theme.AppCompat.Light.NoActionBar">

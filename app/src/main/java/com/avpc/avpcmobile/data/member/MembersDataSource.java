@@ -23,7 +23,7 @@ public interface MembersDataSource {
 
     List<Member> getMembers();
 
-    void getMember(@NonNull String memberId, @NonNull GetMemberCallback callback);
+    Member getMember(@NonNull long memberId);
 
     void saveMembers(@NonNull List<Member> members);
 

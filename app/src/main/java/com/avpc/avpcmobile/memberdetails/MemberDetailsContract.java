@@ -10,11 +10,25 @@ public interface MemberDetailsContract {
 
     interface View extends BaseView<MemberDetailsContract.Presenter> {
         void setLoadingIndicator(boolean active);
-        void showMember(List<Member> members);
-        void showLoadingMembersError();
+        void showLoadingMemberError();
+
+        void showPicture(String url);
+        void showMemberName(String name);
+        void showMobile(String mobile);
+        void showPhone(String landPhone);
+        void showEmail(String email);
+        void showAddress(String address);
+        //void showCity(String city);
+        void showUserGroup(String group);
+//        void showRegistryDate(String registryDate);
+        void showLastAccessDate(String lastAccessDate);
+//        void showLastLatitude(String latitude);
+//        void showLastLongitude(String longitude);
+        void showAvailability(String availability);
+
+        void shoNoMember();
     }
 
     interface Presenter extends BasePresenter {
-        void loadMember(boolean forceUpdate);
     }
 }

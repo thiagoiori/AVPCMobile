@@ -11,7 +11,7 @@ public class MessageDatabaseContract implements BaseColumns {
     public static final String TABLE_NAME = "tblMessages";
     public static final String COLUMN_ID = _ID;
     public static final String COLUMN_MESSAGE_BODY = "message";
-    public static final String COLUMN_DESTINATION_MEMBERS = "destinationMembersId";
+    public static final String COLUMN_DESTINATION_MEMBER_ID = "destinationMemberId";
     public static final String COLUMN_SENDER_ID = "sendMember";
     public static final String COLUMN_DATE = "date";
 
@@ -19,7 +19,7 @@ public class MessageDatabaseContract implements BaseColumns {
             TABLE_NAME + "(" +
             COLUMN_ID + " INTEGER, " +
             COLUMN_MESSAGE_BODY + " TEXT, " +
-            COLUMN_DESTINATION_MEMBERS + " INTEGER, " +
+            COLUMN_DESTINATION_MEMBER_ID + " INTEGER, " +
             COLUMN_SENDER_ID + " INTEGER, " +
             COLUMN_DATE + " NUMERIC)";
 

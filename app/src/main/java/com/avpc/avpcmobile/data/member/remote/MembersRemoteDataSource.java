@@ -65,8 +65,8 @@ public class MembersRemoteDataSource implements
     }
 
     @Override
-    public void getMember(@NonNull String memberId, @NonNull GetMemberCallback callback) {
-
+    public Member getMember(@NonNull long memberId) {
+        return null;
     }
 
     @Override

@@ -33,7 +33,7 @@ public class Member implements Parcelable {
     private long birthDate;
     private double longitude;
     private double latitude;
-    private Boolean availability;
+    private boolean availability;
     private String photoURL;
     private Integer services;
 
@@ -211,11 +211,11 @@ public class Member implements Parcelable {
         this.latitude = latitude;
     }
 
-    public Boolean getAvailability() {
+    public boolean getAvailability() {
         return availability;
     }
 
-    public void setAvailability(Boolean availability) {
+    public void setAvailability(boolean availability) {
         this.availability = availability;
     }
 

@@ -30,9 +30,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class MapVoluntarios extends Fragment
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,

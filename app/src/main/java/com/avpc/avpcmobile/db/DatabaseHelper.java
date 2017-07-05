@@ -6,14 +6,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.avpc.model.db.MemberDatabaseContract;
 import com.avpc.model.db.MessageDatabaseContract;
-import com.avpc.model.db.MessageMembersDatabaseContract;
 import com.avpc.model.db.ServiceDatabaseContract;
-import com.avpc.model.db.ServiceMembersDatabaseContract;
+import com.avpc.model.db.VehicleDatabaseContract;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "dbAVPC.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 6;
 
     private static DatabaseHelper mInstance;
 
@@ -31,16 +30,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         db.execSQL(MemberDatabaseContract.SQL_CREATE_TABLE);
         db.execSQL(MessageDatabaseContract.SQL_CREATE_TABLE);
+        db.execSQL(VehicleDatabaseContract.SQL_CREATE_TABLE);
         db.execSQL(ServiceDatabaseContract.SQL_CREATE_TABLE);
-        db.execSQL(MessageMembersDatabaseContract.SQL_CREATE_TABLE);
-        db.execSQL(ServiceMembersDatabaseContract.SQL_CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(MemberDatabaseContract.SQL_DROP_TABLE);
+        db.execSQL(VehicleDatabaseContract.SQL_DROP_TABLE);
+        db.execSQL(MessageDatabaseContract.SQL_DROP_TABLE);
+        db.execSQL(ServiceDatabaseContract.SQL_DROP_TABLE);
+        onCreate(db);
     }
 }

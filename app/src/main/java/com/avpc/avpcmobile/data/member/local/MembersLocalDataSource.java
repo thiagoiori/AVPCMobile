@@ -14,6 +14,7 @@ import com.avpc.avpcmobile.db.DatabaseHelper;
 import com.avpc.model.Member;
 import com.avpc.model.db.MemberDatabaseContract;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -44,42 +45,73 @@ public class MembersLocalDataSource implements MembersDataSource {
         Cursor cursor = mDb.query(MemberDatabaseContract.TABLE_NAME,
                 null, null, null, null, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
-            members.add(loadMember(cursor));
+            members = new ArrayList<>(cursor.getCount());
+            while (cursor.moveToNext()) {
+                members.add(loadMember(cursor));
+            }
         }
         return members;
     }
 
     private Member loadMember(Cursor cursor) {
-        Member member = null;
+        Member member = new Member();
 
-        member.setId(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_ID)));
-        member.setDni(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_DNI)));
-        member.setName(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_NAME)));
-        member.setSurname1(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_SURNAME1)));
-        member.setSurname2(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_SURNAME2)));
-        member.setMobilePhoneNumber(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_MOBILEPHONENUMBER)));
-        member.setLandPhoneNumber(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_LANDPHONENUMBER)));
-        member.setEmail(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_EMAIL)));
-        member.setAddress(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_ADDRESS)));
-        member.setCity(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_CITY)));
-        member.setPostalCode(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_POSTALCODE)));
-        member.setUserGroup(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_USERGROUP)));
-        member.setRegistryDate(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_REGISTRYDATE)));
-        member.setDeletionDate(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_DELETIONDATE)));
-        member.setLastAccesDate(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_LASTACCESSDATE)));
-        member.setBirthDate(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_BIRTHDATE)));
-        member.setLongitude(cursor.getDouble(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_LONGITUDE)));
-        member.setLatitude(cursor.getDouble(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_LATITUDE)));
-        member.setAvailability(cursor.getInt(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_AVAILABILITY)) == 1);
-        member.setPhotoURL(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_PHOTOURL)));
-        member.setServices(cursor.getInt(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_SERVICES)));
+        try {
+            member.setId(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_SERVER_ID)));
+            member.setDni(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_DNI)));
+            member.setName(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_NAME)));
+            member.setSurname1(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_SURNAME1)));
+            member.setSurname2(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_SURNAME2)));
+            member.setMobilePhoneNumber(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_MOBILEPHONENUMBER)));
+            member.setLandPhoneNumber(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_LANDPHONENUMBER)));
+            member.setEmail(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_EMAIL)));
+            member.setAddress(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_ADDRESS)));
+            member.setCity(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_CITY)));
+            member.setPostalCode(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_POSTALCODE)));
+            member.setUserGroup(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_USERGROUP)));
+            member.setRegistryDate(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_REGISTRYDATE)));
+            member.setDeletionDate(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_DELETIONDATE)));
+            member.setLastAccesDate(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_LASTACCESSDATE)));
+            member.setBirthDate(cursor.getLong(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_BIRTHDATE)));
+            member.setLongitude(cursor.getDouble(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_LONGITUDE)));
+            member.setLatitude(cursor.getDouble(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_LATITUDE)));
+            member.setAvailability(cursor.getInt(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_AVAILABILITY)) == 1);
+            member.setPhotoURL(cursor.getString(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_PHOTOURL)));
+            member.setServices(cursor.getInt(cursor.getColumnIndex(MemberDatabaseContract.COLUMN_SERVICES)));
+        } catch (Exception e) {
+            Log.e("getMember", e.getMessage());
+        }
 
         return member;
     }
 
     @Override
-    public void getMember(@NonNull String memberId, @NonNull GetMemberCallback callback) {
+    public Member getMember(@NonNull long memberId) {
+        String selection = MemberDatabaseContract.COLUMN_ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(memberId)};
+        try {
+            Cursor c = mDb.query(
+                    MemberDatabaseContract.TABLE_NAME, null, selection, selectionArgs, null, null, null);
 
+            Member member = null;
+
+            if (c != null && c.getCount() > 0) {
+                c.moveToFirst();
+                member = loadMember(c);
+            }
+
+            if (c != null) {
+                c.close();
+            }
+
+            return member;
+        } catch (
+                IllegalStateException e)
+
+        {
+            // Send to analytics, log etc
+        }
+        return null;
     }
 
     @Override

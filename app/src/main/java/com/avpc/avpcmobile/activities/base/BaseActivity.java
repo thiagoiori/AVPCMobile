@@ -12,9 +12,15 @@ import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import com.avpc.avpcmobile.R;
-import com.avpc.avpcmobile.member.MembersActivity;
+import com.avpc.avpcmobile.map.MapActivity;
+import com.avpc.avpcmobile.members.MembersActivity;
+import com.avpc.avpcmobile.messages.MessagesActivity;
+import com.avpc.avpcmobile.services.ServicesActivity;
+import com.avpc.avpcmobile.vehicles.VehiclesActivity;
 
 public class BaseActivity extends FirebaseLoginActivity {
 
@@ -56,11 +62,21 @@ public class BaseActivity extends FirebaseLoginActivity {
         }
 
         initNavigationViewComponents(navigationView);
+        setSwitchTrackPositionCallback();
 
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(MENU_ITEM)) {
             mMenuItemId = getIntent().getExtras().getInt(MENU_ITEM);
             navigationView.setCheckedItem(mMenuItemId);
         }
+    }
+
+    private void setSwitchTrackPositionCallback() {
+        mSwitchTrackPosition.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Toast.makeText(BaseActivity.this, "Teste", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -107,26 +123,40 @@ public class BaseActivity extends FirebaseLoginActivity {
                         }
 
                         mMenuItemId = menuItem.getItemId();
-
                         Bundle mBundle = new Bundle();
                         mBundle.putInt(MENU_ITEM, menuItem.getItemId());
+                        Intent intent = null;
+
                         switch (menuItem.getItemId()) {
                             case R.id.nav_mapa:
-
+                                intent =
+                                        new Intent(BaseActivity.this, MapActivity.class);
+                                break;
+                            case R.id.nav_services:
+                                intent =
+                                        new Intent(BaseActivity.this, ServicesActivity.class);
+                                break;
+                            case R.id.nav_noticias:
+                                intent =
+                                        new Intent(BaseActivity.this, MessagesActivity.class);
                                 break;
                             case R.id.nav_voluntarios:
-                                Intent intent =
+                                intent =
                                         new Intent(BaseActivity.this, MembersActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                intent.putExtra(MENU_ITEM, R.id.nav_voluntarios);
-                                intent.putExtras(mBundle);
-                                startActivity(intent);
+                                break;
+                            case R.id.nav_vehicles:
+                                intent =
+                                        new Intent(BaseActivity.this, VehiclesActivity.class);
                                 break;
                             default:
                                 break;
                         }
                         // Close the navigation drawer when an item is selected.
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.putExtra(MENU_ITEM, R.id.nav_voluntarios);
+                        intent.putExtras(mBundle);
+                        startActivity(intent);
                         menuItem.setChecked(true);
                         mDrawerLayout.closeDrawers();
                         return true;

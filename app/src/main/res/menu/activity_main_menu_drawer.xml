@@ -6,7 +6,7 @@
             android:id="@+id/nav_mapa"
             android:title="@string/menu_map" />
         <item
-            android:id="@+id/nav_avisos"
+            android:id="@+id/nav_services"
             android:title="@string/menu_avisos" />
         <item
             android:id="@+id/nav_noticias"

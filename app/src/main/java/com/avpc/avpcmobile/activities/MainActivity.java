@@ -9,10 +9,9 @@ import android.view.MenuInflater;
 import android.view.WindowManager;
 
 import com.avpc.avpcmobile.R;
-import com.avpc.avpcmobile.activities.base.BaseActivity;
 import com.avpc.avpcmobile.fragments.ForgotPasswordFragment;
 import com.avpc.avpcmobile.fragments.LoginFragment;
-import com.avpc.avpcmobile.member.MembersActivity;
+import com.avpc.avpcmobile.members.MembersActivity;
 import com.avpc.model.UserToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.MaterialTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.mAuth = FirebaseAuth.getInstance();
@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity implements
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 mUser = firebaseAuth.getCurrentUser();
                 if (mUser != null) {
-                    UserToken.setToken(mUser.getIdToken(false).getResult().getToken());
-                    callMainMenu();
+
                 }
             }
         };
@@ -56,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements
                                     new OnCompleteListener<GetTokenResult>() {
                                         @Override
                                         public void onComplete(@NonNull Task<GetTokenResult> task) {
-
+                                            UserToken.setToken(mUser.getIdToken(false).getResult().getToken());
+                                            callMainMenu();
                                         }
                                     });
                 }

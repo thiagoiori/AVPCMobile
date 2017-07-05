@@ -1,25 +1,6 @@
 package com.avpc.model.restclient;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.support.v4.net.ConnectivityManagerCompat;
-import android.util.Log;
 
-import com.avpc.avpcmobile.R;
-import com.avpc.avpcmobile.fragments.MemberFragment.CallbackMembersLoaded;
-import com.avpc.model.Member;
-
-//import org.springframework.http.HttpEntity;
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.HttpMethod;
-//import org.springframework.http.MediaType;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.http.converter.StringHttpMessageConverter;
-//import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-//import org.springframework.web.client.RestTemplate;
-
-import java.net.URI;
-import java.util.List;
 
 /**
  * Created by thiago on 09/06/17.

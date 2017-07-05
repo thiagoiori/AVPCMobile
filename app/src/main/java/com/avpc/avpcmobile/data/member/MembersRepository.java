@@ -4,6 +4,7 @@ package com.avpc.avpcmobile.data.member;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.avpc.model.Member;
 
@@ -115,8 +116,32 @@ public class MembersRepository implements MembersDataSource {
     }
 
     @Override
-    public void getMember(@NonNull String memberId, @NonNull GetMemberCallback callback) {
+    public Member getMember(@NonNull long memberId) {
+        checkNotNull(memberId);
 
+        Member cachedMember = getMemberWithId(memberId);
+
+        // Respond immediately with cache if we have one
+        if (cachedMember != null) {
+            return cachedMember;
+        }
+
+        Member task = mMembersLocalDataSource.getMember(memberId);
+        if (task == null) {
+            task = mMembersRemoteDataSource.getMember(memberId);
+        }
+
+        return task;
+    }
+
+    @Nullable
+    private Member getMemberWithId(long id) {
+        checkNotNull(id);
+        if (mCachedMembers == null || mCachedMembers.isEmpty()) {
+            return null;
+        } else {
+            return mCachedMembers.get(id);
+        }
     }
 
     @Override
@@ -186,6 +211,10 @@ public class MembersRepository implements MembersDataSource {
         for (Member member : members) {
             mMembersLocalDataSource.saveMember(member);
         }
+    }
+
+    public Member getCachedMember(long memberId) {
+        return mCachedMembers.get(memberId);
     }
 
     public interface MembersRepositoryObserver {
