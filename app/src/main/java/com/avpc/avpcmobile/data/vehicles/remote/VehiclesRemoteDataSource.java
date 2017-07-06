@@ -17,7 +17,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.avpc.avpcmobile.R;
 import com.avpc.avpcmobile.data.VolleySingleton;
 import com.avpc.avpcmobile.data.vehicles.VehiclesDataSource;
-import com.avpc.model.UserToken;
+import com.avpc.model.LoggedUser;
 import com.avpc.model.Vehicle;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -55,7 +55,7 @@ public class VehiclesRemoteDataSource implements VehiclesDataSource,
 
     @Override
     public List<Vehicle> getVehicles() {
-        return requestVehiclesSync(UserToken.getSession());
+        return requestVehiclesSync(LoggedUser.getSession());
     }
 
     @Override
@@ -103,7 +103,7 @@ public class VehiclesRemoteDataSource implements VehiclesDataSource,
         VolleySingleton volley = new VolleySingleton(mContext);
         String url = mContext.getString(R.string.rest_server) + "/members/login";
         String urlVehicles = mContext.getString(R.string.rest_server) + "/vehicle";
-        final String userToken = UserToken.getToken();
+        final String userToken = LoggedUser.getToken();
         GsonBuilder gson = new GsonBuilder();
 
         RequestFuture<String> requestLoginSession = RequestFuture.newFuture();

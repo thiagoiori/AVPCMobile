@@ -7,10 +7,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.avpc.avpcmobile.data.user.remote.LoginTokenValidator;
-import com.avpc.model.UserToken;
+import com.avpc.model.LoggedUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -18,6 +17,7 @@ import com.google.firebase.auth.GetTokenResult;
 
 public class FirebaseLoginActivity extends AppCompatActivity
 implements LoginTokenValidator.UserTokenValidatorListener{
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth.IdTokenListener mTokenListener;
@@ -36,8 +36,8 @@ implements LoginTokenValidator.UserTokenValidatorListener{
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 mUser = firebaseAuth.getCurrentUser();
                 if (mUser != null) {
-                    if (UserToken.getToken().isEmpty())
-                        UserToken.setToken(mUser.getIdToken(false).getResult().getToken());
+                    if (LoggedUser.getToken().isEmpty())
+                        LoggedUser.setToken(mUser.getIdToken(false).getResult().getToken());
                     callMainMenu();
                 } else {
                     redirectToLogin();
@@ -97,7 +97,7 @@ implements LoginTokenValidator.UserTokenValidatorListener{
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(USER_TOKEN, UserToken.getToken());
+        outState.putString(USER_TOKEN, LoggedUser.getToken());
     }
 
     @Override
@@ -105,7 +105,7 @@ implements LoginTokenValidator.UserTokenValidatorListener{
         super.onRestoreInstanceState(savedInstanceState);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(USER_TOKEN)) {
-            UserToken.setToken(savedInstanceState.getString(USER_TOKEN));
+            LoggedUser.setToken(savedInstanceState.getString(USER_TOKEN));
         }
     }
 
@@ -138,7 +138,7 @@ implements LoginTokenValidator.UserTokenValidatorListener{
 
     @Override
     public void receiveValidatedToken(String tokenSession) {
-        UserToken.setSession(tokenSession);
+        LoggedUser.setSession(tokenSession);
     }
 
     @Override

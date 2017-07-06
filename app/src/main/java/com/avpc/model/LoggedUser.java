@@ -1,22 +1,19 @@
 package com.avpc.model;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 /**
  * Created by thiago on 14/06/17.
  */
 
-public class UserToken {
+public class LoggedUser {
 
-    private static UserToken internalUserToken;
+    private static LoggedUser internalUserToken;
 
-    private UserToken() {
+    private LoggedUser() {
 
     }
 
     static {
-        internalUserToken = new UserToken();
+        internalUserToken = new LoggedUser();
     }
 
     private static String mToken = "";

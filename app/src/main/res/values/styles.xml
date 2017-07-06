@@ -1,8 +1,15 @@
 <resources>
 
+    <style name="ButtonDialog" parent="ParentMaterialTheme">
+        <item name="colorButtonNormal">#a39bf5</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
     <style name="MaterialTheme" parent="ParentMaterialTheme">
 
     </style>
+
     <style name="SplashTheme" parent="MaterialTheme">
         <item name="android:windowBackground">@drawable/splash</item>
     </style>

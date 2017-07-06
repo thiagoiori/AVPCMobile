@@ -146,7 +146,7 @@ implements MembersContract.View {
         if (active)
             mProgressDialog.show();
         else
-            mProgressDialog.hide();
+            mProgressDialog.dismiss();
     }
 
 }

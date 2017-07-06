@@ -12,21 +12,17 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 import com.avpc.avpcmobile.R;
 import com.avpc.avpcmobile.data.VolleySingleton;
 import com.avpc.avpcmobile.data.member.MembersDataSource;
 import com.avpc.model.Member;
-import com.avpc.model.UserToken;
+import com.avpc.model.LoggedUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -61,7 +57,7 @@ public class MembersRemoteDataSource implements
 
     @Override
     public List<Member> getMembers() {
-        return requestMembersSync(UserToken.getSession());
+        return requestMembersSync(LoggedUser.getSession());
     }
 
     @Override
@@ -109,7 +105,7 @@ public class MembersRemoteDataSource implements
         VolleySingleton volley = new VolleySingleton(mContext);
         String url = mContext.getString(R.string.rest_server) + "/members/login";
         String urlMembers = mContext.getString(R.string.rest_server) + "/members";
-        final String userToken = UserToken.getToken();
+        final String userToken = LoggedUser.getToken();
         GsonBuilder gson = new GsonBuilder();
 
         RequestFuture<String> requestLoginSession = RequestFuture.newFuture();
@@ -176,19 +172,20 @@ public class MembersRemoteDataSource implements
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
+            //TODO: Erro de conexao, colocar tratamento
             e.printStackTrace();
         }
 
         Gson objGson = gson.setPrettyPrinting().create();
         Member[] members = null;
         try {
-            members = objGson.fromJson(retornoArray.toString(), Member[].class);
+            if (retornoArray != null)
+                members = objGson.fromJson(retornoArray.toString(), Member[].class);
         } catch (Exception ex) {
             Log.e("ParseMember[]", ex.getMessage());
         }
 
         return Arrays.asList(members);
-
     }
 
     private void requestMembersAsync(String jSessionIdToken) {

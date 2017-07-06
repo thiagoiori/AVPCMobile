@@ -4,17 +4,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import com.avpc.avpcmobile.GPS.GPSSettingDialogFragment;
 import com.avpc.avpcmobile.R;
 import com.avpc.avpcmobile.map.MapActivity;
 import com.avpc.avpcmobile.members.MembersActivity;
@@ -28,7 +32,15 @@ public class BaseActivity extends FirebaseLoginActivity {
     private ActionBarDrawerToggle mToggle;
     private SwitchCompat mSwitchTrackPosition;
     private static final String MENU_ITEM = "menu_item";
+    private static final String GPS_SETTINGS_MENU = "gps_settings_menu";
     private int mMenuItemId;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +95,11 @@ public class BaseActivity extends FirebaseLoginActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        if ( id == R.id.action_settings ) {
+            showGPSSettings();
+            return true;
+        }
+
         if (mToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -93,6 +110,14 @@ public class BaseActivity extends FirebaseLoginActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showGPSSettings() {
+//        GPSSettingDialogFragment gpsSettingDialogFragment = new GPSSettingDialogFragment();
+//        gpsSettingDialogFragment.show(getSupportFragmentManager(), GPS_SETTINGS_MENU);
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(R.layout.dialog_fragment_gps_settings);
+        bottomSheetDialog.show();
     }
 
     @Override
